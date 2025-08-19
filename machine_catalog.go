@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type MachineCatalogs struct {
@@ -377,17 +378,19 @@ type MachineCatalogs struct {
 }
 
 func (cfg *config) getMachineCatalogs() (MachineCatalogs, error) {
-	url := "https://api.cloud.com/cvad/manage/MachineCatalogs"
+	const url = "https://api.cloud.com/cvad/manage/MachineCatalogs"
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return MachineCatalogs{}, fmt.Errorf("error creating HTTP request: %v", err)
 	}
-
-	req.Header.Set("Citrix-CustomerId", cfg.ClientID)
-	req.Header.Set("Citrix-InstanceId", cfg.CCID)
+	req.Header.Set("Citrix-InstanceId", cfg.SiteID)
+	req.Header.Set("Citrix-CustomerId", cfg.CCID)
 	req.Header.Set("Authorization", fmt.Sprintf("CWSAuth Bearer=%v", cfg.BearerToken))
+	req.Header.Set("Accept", "application/json")
 
-	res, err := http.Get(url)
+	client := http.DefaultClient
+	res, err := client.Do(req)
 	if err != nil {
 		return MachineCatalogs{}, fmt.Errorf("error calling Citrix API for MC list: %v", err)
 	}
@@ -398,10 +401,14 @@ func (cfg *config) getMachineCatalogs() (MachineCatalogs, error) {
 		return MachineCatalogs{}, fmt.Errorf("error reading response body: %v", err)
 	}
 
-	var machineCatalogList MachineCatalogs
-	if err := json.Unmarshal(data, &machineCatalogList); err != nil {
+	if res.StatusCode != http.StatusOK {
+		return MachineCatalogs{}, fmt.Errorf("citrix failure: status=%d body=%s", res.StatusCode, strings.TrimSpace(string(data)))
+	}
+
+	var out MachineCatalogs
+	if err := json.Unmarshal(data, &out); err != nil {
 		return MachineCatalogs{}, fmt.Errorf("error unmarshalling JSON for get MCs: %v", err)
 	}
 
-	return machineCatalogList, nil
+	return out, nil
 }

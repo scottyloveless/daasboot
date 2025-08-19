@@ -17,28 +17,29 @@ type config struct {
 	CCID         string
 	BearerToken  string
 	TokenExpiry  time.Time
+	SiteID       string
 }
 
 func main() {
 	var cfg config
+	var err error
 
 	godotenv.Load()
 
 	cfg.ClientID = os.Getenv("CLIENT_ID")
 	cfg.ClientSecret = os.Getenv("CLIENT_SECRET")
 	cfg.CCID = os.Getenv("CCID")
+	cfg.SiteID = os.Getenv("SITE_ID")
 
 	flag.StringVar(&cfg.Clinic, "clinic", "CLINIC", "MPH six digit shortcode")
 	flag.Parse()
 
-	var err error
 	cfg.BearerToken, cfg.TokenExpiry, err = cfg.getBearerToken()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Clinic: %s\nClientID: %s\nClientSecret: %s\nCCID: %s\nToken: %s\nTokenExpiry: %v\n", cfg.Clinic, os.Getenv("CLIENT_ID"), cfg.ClientSecret, cfg.CCID, cfg.BearerToken, cfg.TokenExpiry)
-
+	fmt.Println("Fetching machine catalogs...")
 	machineCatalogs, err := cfg.getMachineCatalogs()
 	if err != nil {
 		log.Fatalf("error retrieving machine catalog list: %v", err)
