@@ -48,4 +48,15 @@ func main() {
 	for _, mc := range machineCatalogs.Items {
 		fmt.Println(mc.Name)
 	}
+
+	mcNameResp, err := cfg.checkMachineCatalogName()
+	if err != nil {
+		panic(err)
+	}
+
+	if mcNameResp.Exists {
+		fmt.Println("Catalog already exists")
+	} else {
+		fmt.Println("Catalog name is available")
+	}
 }
