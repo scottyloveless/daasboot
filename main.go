@@ -49,12 +49,12 @@ func main() {
 		fmt.Println(mc.Name)
 	}
 
-	mcNameResp, err := cfg.checkMachineCatalogName()
+	mcNameExists, err := cfg.checkMachineCatalogName()
 	if err != nil {
 		panic(err)
 	}
 
-	if mcNameResp.Exists {
+	if mcNameExists {
 		fmt.Println("Catalog already exists")
 	} else {
 		fmt.Println("Catalog name is available")
