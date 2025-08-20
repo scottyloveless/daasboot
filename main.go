@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -56,7 +57,26 @@ func main() {
 
 	if mcNameExists {
 		fmt.Println("Catalog already exists")
-	} else {
-		fmt.Println("Catalog name is available")
+		mcRules, err := cfg.getMachineCatalog()
+		if err != nil {
+			panic(err)
+		}
+		b, err := json.MarshalIndent(mcRules, "", "  ")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Printing Machine Catalog details...")
+		fmt.Println(string(b))
+		fmt.Println("no actions being taken, exiting...")
+
+		os.Exit(1)
 	}
+	fmt.Println("Catalog name is available")
+	fmt.Println("Creating new Catalog...")
+	_, err = cfg.createMachineCatalog()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Catalog created successfully for %s\n", cfg.Clinic)
+	// fmt.Println("Creating new machine catalog...")
 }
