@@ -88,7 +88,6 @@ func main() {
 		panic(err)
 	}
 	if dgExists {
-		// TODO: add delivery group check here
 		fmt.Println("Delivery group already exists, continuing...")
 	} else {
 		fmt.Println("Delivery group does not exist, creating new one...")

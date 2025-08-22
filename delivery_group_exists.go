@@ -43,7 +43,7 @@ func (cfg *config) checkDeliveryGroupExists() (bool, error) {
 	client := http.DefaultClient
 	res, err := client.Do(req)
 	if err != nil {
-		return false, fmt.Errorf("error calling Citrix API for MC list: %v", err)
+		return false, fmt.Errorf("error calling Citrix API for dg check: %v", err)
 	}
 	defer res.Body.Close()
 
@@ -53,10 +53,10 @@ func (cfg *config) checkDeliveryGroupExists() (bool, error) {
 	}
 
 	if res.StatusCode >= 400 && res.StatusCode < 404 {
-		return false, fmt.Errorf("citrix error checking mc exists: status=%d body=%s", res.StatusCode, strings.TrimSpace(string(data)))
+		return false, fmt.Errorf("citrix error checking dg exists: status=%d body=%s", res.StatusCode, strings.TrimSpace(string(data)))
 	}
 	if res.StatusCode > 404 {
-		return false, fmt.Errorf("server error checking mc exists: status=%d body=%s", res.StatusCode, strings.TrimSpace(string(data)))
+		return false, fmt.Errorf("server error checking dg exists: status=%d body=%s", res.StatusCode, strings.TrimSpace(string(data)))
 	}
 	if res.StatusCode == 404 {
 		return false, nil

@@ -1,7 +1,6 @@
 # James Reference
 
-```Powershell
-
+```ps1
 #Variables
 $sitename = read-host "What is the site name?"
 $users = "internal.svp.com\grp_citrix_" + "$sitename"
