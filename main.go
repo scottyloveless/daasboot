@@ -18,6 +18,7 @@ type config struct {
 	BearerToken  string
 	TokenExpiry  time.Time
 	SiteID       string
+	PIMS         string
 }
 
 func main() {
@@ -31,8 +32,18 @@ func main() {
 	cfg.CCID = os.Getenv("CCID")
 	cfg.SiteID = os.Getenv("SITE_ID")
 
-	flag.StringVar(&cfg.Clinic, "clinic", "CLINIC", "MPH six digit shortcode")
+	flag.StringVar(&cfg.Clinic, "clinic", "", "MPH six digit shortcode")
+	flag.StringVar(&cfg.PIMS, "pims", "", "Avimark or Cornerstone")
 	flag.Parse()
+
+	if cfg.Clinic == "" || cfg.PIMS == "" {
+		fmt.Println("Usage: --clinic CLINIC --pims Avimark")
+		os.Exit(1)
+	}
+	if cfg.PIMS != "Avimark" && cfg.PIMS != "Cstone" {
+		fmt.Println("only two valid PIMS are Avimark and Cstone")
+		os.Exit(1)
+	}
 
 	cfg.BearerToken, cfg.TokenExpiry, err = cfg.getBearerToken()
 	if err != nil {
@@ -49,32 +60,44 @@ func main() {
 		fmt.Println(mc.Name)
 	}
 
-	catalogNameExists, err := cfg.checkMachineCatalogName()
+	catalogExists, err := cfg.checkMachineCatalogName()
 	if err != nil {
 		panic(err)
 	}
 
-	if catalogNameExists {
-		fmt.Println("Catalog already exists")
-		// mcRules, err := cfg.getMachineCatalog()
-		// if err != nil {
-		// 	panic(err)
-		// }
-		// b, err := json.MarshalIndent(mcRules, "", "  ")
-		// if err != nil {
-		// 	panic(err)
-		// }
-		// fmt.Println("Printing Machine Catalog details...")
-		// fmt.Println(string(b))
-		fmt.Println("No actions being taken, exiting...")
-		os.Exit(0)
+	if catalogExists {
+		fmt.Println("Catalog already exists, continuing to Delivery Group...")
+	} else {
+		fmt.Println("Catalog name is available")
+		fmt.Println("Creating new Catalog...")
+		_, err = cfg.createMachineCatalog()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("Catalog created successfully: MC_%s\n", cfg.Clinic)
+
 	}
-	fmt.Println("Catalog name is available")
-	fmt.Println("Creating new Catalog...")
-	_, err = cfg.createMachineCatalog()
+
+	// TODO: Create VM in vCenter here
+
+	// TODO: Add Machine to Machine Catalog
+
+	fmt.Println("Seeing if Delivery Group already exists...")
+	dgExists, err := cfg.checkDeliveryGroupExists()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Catalog created successfully for %s\n", cfg.Clinic)
-	// fmt.Println("Creating new machine catalog...")
+	if dgExists {
+		// TODO: add delivery group check here
+		fmt.Println("Delivery group already exists, continuing...")
+	} else {
+		fmt.Println("Delivery group does not exist, creating new one...")
+		err = cfg.createDeliveryGroup()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Delivery group and PIMS apps created successfully")
+	}
+
+	os.Exit(0)
 }
