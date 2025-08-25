@@ -98,5 +98,6 @@ func main() {
 		fmt.Println("Delivery group and PIMS apps created successfully")
 	}
 
+	fmt.Println("Script complete, exiting...")
 	os.Exit(0)
 }
