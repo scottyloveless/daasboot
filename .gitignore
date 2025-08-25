@@ -7,7 +7,7 @@
 *.dll
 *.so
 *.dylib
-
+daasboot
 # Test binary, built with `go test -c`
 *.test
 

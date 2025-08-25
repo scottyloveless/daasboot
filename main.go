@@ -37,7 +37,7 @@ func main() {
 	flag.Parse()
 
 	if cfg.Clinic == "" || cfg.PIMS == "" {
-		fmt.Println("Usage: --clinic CLINIC --pims Avimark")
+		fmt.Println("Usage: --clinic CLINIC --pims Avimark/Cstone")
 		os.Exit(1)
 	}
 	if cfg.PIMS != "Avimark" && cfg.PIMS != "Cstone" {
