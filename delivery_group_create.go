@@ -304,7 +304,6 @@ type InstalledAppPropertiesStruct struct {
 
 func (cfg *config) createDeliveryGroup() error {
 	const url = "https://api.cloud.com/cvad/manage/DeliveryGroups"
-	// $dg = New-BrokerDesktopGroup -Name $DGName -PublishedName $DGName -DesktopKind "Shared" -SessionSupport "MultiSession" -DeliveryType DesktopsAndApps -Description $DGName
 
 	body := DeliveryGroupParams{
 		Name:                   "DG_" + cfg.Clinic,
