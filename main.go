@@ -75,7 +75,6 @@ func main() {
 			panic(err)
 		}
 		fmt.Printf("Catalog created successfully: MC_%s\n", cfg.Clinic)
-
 	}
 
 	// TODO: Create VM in vCenter here
