@@ -33,7 +33,7 @@ func main() {
 	cfg.SiteID = os.Getenv("SITE_ID")
 
 	flag.StringVar(&cfg.Clinic, "clinic", "", "MPH six digit shortcode")
-	flag.StringVar(&cfg.PIMS, "pims", "", "Avimark or Cornerstone")
+	flag.StringVar(&cfg.PIMS, "pims", "", "Avimark or Cstone")
 	flag.Parse()
 
 	if cfg.Clinic == "" || cfg.PIMS == "" {
